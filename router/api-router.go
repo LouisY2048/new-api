@@ -397,5 +397,21 @@ func SetApiRouter(router *gin.Engine) {
 			deploymentsRoute.POST("/:id/extend", controller.ExtendDeployment)
 			deploymentsRoute.DELETE("/:id", controller.DeleteDeployment)
 		}
+		// OpenApp management
+		openAppRoute := apiRouter.Group("/openapp")
+		openAppRoute.Use(middleware.AdminAuth())
+		{
+			openAppRoute.GET("/", controller.GetAllOpenApps)
+			openAppRoute.GET("/search", controller.GetAllOpenApps)
+			openAppRoute.GET("/:id", controller.GetOpenApp)
+			openAppRoute.POST("/", controller.AddOpenApp)
+			openAppRoute.PUT("/", controller.UpdateOpenApp)
+			openAppRoute.DELETE("/:id", controller.DeleteOpenApp)
+			openAppRoute.POST("/:id/key",
+				middleware.CriticalRateLimit(),
+				middleware.SecureVerificationRequired(),
+				controller.GetOpenAppKey,
+			)
+		}
 	}
 }
