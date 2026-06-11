@@ -18,6 +18,7 @@ type UserBase struct {
 	Id       int    `json:"id"`
 	Group    string `json:"group"`
 	Email    string `json:"email"`
+	Iccid    string `json:"iccid"`
 	Quota    int    `json:"quota"`
 	Status   int    `json:"status"`
 	Username string `json:"username"`
