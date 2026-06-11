@@ -48,6 +48,8 @@ const (
 	ContextKeyUserQuota   ContextKey = "user_quota"
 	ContextKeyUserStatus  ContextKey = "user_status"
 	ContextKeyUserEmail   ContextKey = "user_email"
+	ContextKeyOpenAppId   ContextKey = "open_app_id"
+	ContextKeyOpenAppName ContextKey = "open_app_name"
 	ContextKeyUserGroup   ContextKey = "user_group"
 	ContextKeyUsingGroup  ContextKey = "group"
 	ContextKeyUserName    ContextKey = "username"
