@@ -34,6 +34,7 @@ import {
   CreditCard,
   Server,
   Activity,
+  AppWindow,
 } from 'lucide-react';
 
 import SystemSetting from '../../components/settings/SystemSetting';
@@ -49,6 +50,7 @@ import DrawingSetting from '../../components/settings/DrawingSetting';
 import PaymentSetting from '../../components/settings/PaymentSetting';
 import ModelDeploymentSetting from '../../components/settings/ModelDeploymentSetting';
 import PerformanceSetting from '../../components/settings/PerformanceSetting';
+import OpenAppSetting from '../../components/settings/OpenAppSetting';
 
 const Setting = () => {
   const { t } = useTranslation();
@@ -167,6 +169,16 @@ const Setting = () => {
       ),
       content: <SystemSetting />,
       itemKey: 'system',
+    });
+    panes.push({
+      tab: (
+        <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <AppWindow size={18} />
+          {'开放应用设置'}
+        </span>
+      ),
+      content: <OpenAppSetting />,
+      itemKey: 'openapp',
     });
     panes.push({
       tab: (
