@@ -1293,6 +1293,25 @@ func GetSubscriptionPlanInfoByUserSubscriptionId(userSubscriptionId int) (*Subsc
 	return info, nil
 }
 
+// GetActiveUserSubscription returns the most recent active subscription for a user.
+func GetActiveUserSubscription(userId int) (*UserSubscription, error) {
+	var sub UserSubscription
+	now := time.Now().Unix()
+	err := DB.Where("user_id = ? AND status = 'active' AND end_time > ?", userId, now).
+		Order("id desc").First(&sub).Error
+	return &sub, err
+}
+
+// UpgradeUserGroup updates a user's group column.
+func UpgradeUserGroup(userId int, group string) error {
+	return DB.Model(&User{}).Where("id = ?", userId).Update("group", group).Error
+}
+
+// CreateUserSubscription inserts a new UserSubscription record (non-transactional wrapper).
+func CreateUserSubscription(sub *UserSubscription) error {
+	return DB.Create(sub).Error
+}
+
 // Update subscription used amount by delta (positive consume more, negative refund).
 func PostConsumeUserSubscriptionDelta(userSubscriptionId int, delta int64) error {
 	if userSubscriptionId <= 0 {

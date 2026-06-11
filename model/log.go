@@ -531,6 +531,14 @@ func SumUsedToken(logType int, startTimestamp int64, endTimestamp int64, modelNa
 	return token
 }
 
+// GetUserConsumeLogs returns all consume-type logs for a user, ordered by most recent first.
+func GetUserConsumeLogs(userId int) ([]*Log, error) {
+	var logs []*Log
+	err := LOG_DB.Where("user_id = ? AND type = ?", userId, LogTypeConsume).
+		Order("created_at desc").Find(&logs).Error
+	return logs, err
+}
+
 func DeleteOldLog(ctx context.Context, targetTimestamp int64, limit int) (int64, error) {
 	var total int64 = 0
 

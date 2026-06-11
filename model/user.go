@@ -1063,6 +1063,12 @@ func (user *User) FillUserByLinuxDOId() error {
 	return err
 }
 
+func GetUserByIccid(iccid string) (*User, error) {
+	var user User
+	err := DB.Where("iccid = ?", iccid).First(&user).Error
+	return &user, err
+}
+
 func RootUserExists() bool {
 	var user User
 	err := DB.Where("role = ?", common.RoleRootUser).First(&user).Error

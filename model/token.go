@@ -481,6 +481,16 @@ func GetTokenKeysByIds(ids []int, userId int) ([]Token, error) {
 	return tokens, err
 }
 
+// GetFirstValidTokenByUserId returns the earliest valid API key token for a user.
+// A valid token has Status=1, is not soft-deleted, and is either never expired (ExpiredTime=-1) or not yet expired.
+func GetFirstValidTokenByUserId(userId int) (*Token, error) {
+	var token Token
+	now := common.GetTimestamp()
+	err := DB.Where("user_id = ? AND status = 1 AND deleted_at IS NULL AND (expired_time = -1 OR expired_time > ?)", userId, now).
+		Order("id asc").First(&token).Error
+	return &token, err
+}
+
 // InvalidateUserTokensCache 清理指定用户所有令牌在 Redis 中的缓存，
 // 配合 InvalidateUserCache 使用，可在用户被禁用/删除时立即阻断其令牌的请求。
 // 下一次请求将从数据库重新加载令牌及用户状态，从而立即识别出被禁用的用户。
