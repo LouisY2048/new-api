@@ -16,12 +16,12 @@ import (
 func IssueApiKey(c *gin.Context) {
 	var req dto.IssueApiKeyRequest
 	if err := common.UnmarshalBodyReusable(c, &req); err != nil {
-		common.OpenApiError(c, "10009", "签名错误、AppId 非法或时间戳过期")
+		common.OpenApiError(c, "99999", "平台系统内部异常")
 		return
 	}
 
-	// Email length validation
-	if len(req.Email) > 50 {
+	// Email validation: empty or too long
+	if len(req.Email) == 0 || len(req.Email) > 50 {
 		common.OpenApiError(c, "10002", "邮箱格式不符合规范")
 		return
 	}
@@ -60,6 +60,20 @@ func IssueApiKey(c *gin.Context) {
 		return
 	}
 
+	if code != "00000" {
+		messages := map[string]string{
+			"10001": "iccid 不存在或未开通",
+			"10004": "APIKey 无效、已过期或已作废",
+		}
+		msg, ok := messages[code]
+		if !ok {
+			code = "99999"
+			msg = "平台系统内部异常"
+		}
+		common.OpenApiError(c, code, msg)
+		return
+	}
+
 	common.OpenApiSuccess(c, data)
 }
 
@@ -67,12 +81,12 @@ func IssueApiKey(c *gin.Context) {
 func OpenGetTokenUsage(c *gin.Context) {
 	var req dto.TokenUsageRequest
 	if err := common.UnmarshalBodyReusable(c, &req); err != nil {
-		common.OpenApiError(c, "10009", "签名错误、AppId 非法或时间戳过期")
+		common.OpenApiError(c, "99999", "平台系统内部异常")
 		return
 	}
 
 	data, code, err := service.GetTokenUsage(req.Iccid)
-	if err != nil {
+	if err != nil || code != "00000" {
 		messages := map[string]string{
 			"10001": "iccid 不存在或未开通",
 			"10004": "APIKey 无效、已过期或已作废",

@@ -47,7 +47,7 @@ func OpenAuth() gin.HandlerFunc {
 		if app.IpWhitelistEnabled && app.AllowIps != "" {
 			clientIP := c.ClientIP()
 			allowed := false
-			for _, ip := range strings.Split(app.AllowIps, ",") {
+			for _, ip := range strings.Split(app.AllowIps, "\n") {
 				if strings.TrimSpace(ip) == clientIP {
 					allowed = true
 					break

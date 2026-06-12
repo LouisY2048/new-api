@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Form, Button, Switch } from '@douyinfe/semi-ui';
+import { Modal, Form, Button } from '@douyinfe/semi-ui';
 import { API, showError, showSuccess } from '../../../helpers';
 
 const AddEditOpenAppModal = ({ visible, app, onClose, onSuccess }) => {
@@ -64,16 +64,12 @@ const AddEditOpenAppModal = ({ visible, app, onClose, onSuccess }) => {
           label='名称'
           rules={[{ required: true, message: '请输入应用名称' }]}
         />
-        <Form.Slot label='状态' field='status'>
-          <Switch defaultChecked={true} />
-        </Form.Slot>
-        <Form.Slot label='IP 白名单开关' field='ip_whitelist_enabled'>
-          <Switch />
-        </Form.Slot>
+        <Form.Switch label='状态' field='status' />
+        <Form.Switch label='IP 白名单开关' field='ip_whitelist_enabled' />
         <Form.TextArea
           field='allow_ips'
           label='IP 白名单'
-          placeholder='多个 IP 用逗号分隔，如 192.168.1.1,10.0.0.0/24'
+          placeholder='每行一个 IP，如 192.168.1.1'
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button onClick={onClose}>取消</Button>
