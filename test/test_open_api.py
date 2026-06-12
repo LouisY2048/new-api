@@ -276,12 +276,12 @@ resp, _ = request("/open/v1/apikey/issue", "not json")
 assert_code(resp, "99999", "2A.5 body 非法 JSON → 99999")
 
 # 2A.6 ICCID 超过 20 位
-body = f'{{"iccid":"{"9" * 30}","email":"t3@t.com","planid":{PLAN_ID}}}'
+body = f'{{"iccid":"{"9" * 21}","email":"t5-{TEST_TS}@test.com","planid":{PLAN_ID}}}'
 resp, _ = request("/open/v1/apikey/issue", body)
 assert_code(resp, "10001", "2A.6 ICCID >20 位 → 10001")
 
 # 2A.7 ICCID 不足 20 位
-body = f'{{"iccid":"{"9" * 5}","email":"t4@t.com","planid":{PLAN_ID}}}'
+body = f'{{"iccid":"{str(TEST_TS)[:5]}","email":"t6-{TEST_TS}@test.com","planid":{PLAN_ID}}}'
 resp, _ = request("/open/v1/apikey/issue", body)
 assert_code(resp, "10001", "2A.7 ICCID <20 位 → 10001")
 

@@ -34,13 +34,13 @@ func OpenAuth() gin.HandlerFunc {
 		sign := c.GetHeader("X-Sign")
 
 		if appId == "" || timestamp == "" || sign == "" {
-			openApiAbort(c, "10009", "Missing required headers: X-AppId, X-Timestamp, X-Sign")
+			openApiAbort(c, "10009", "签名错误、AppId 非法或时间戳过期")
 			return
 		}
 
 		app, err := model.GetOpenAppByAppId(appId)
 		if err != nil || app.Status != 1 {
-			openApiAbort(c, "10009", "Invalid AppId or app is disabled")
+			openApiAbort(c, "10009", "签名错误、AppId 非法或时间戳过期")
 			return
 		}
 
@@ -54,14 +54,14 @@ func OpenAuth() gin.HandlerFunc {
 				}
 			}
 			if !allowed {
-				openApiAbort(c, "10009", "IP not in whitelist")
+				openApiAbort(c, "10009", "签名错误、AppId 非法或时间戳过期")
 				return
 			}
 		}
 
 		ts, err := strconv.ParseInt(timestamp, 10, 64)
 		if err != nil {
-			openApiAbort(c, "10009", "Invalid timestamp format")
+			openApiAbort(c, "10009", "签名错误、AppId 非法或时间戳过期")
 			return
 		}
 		now := time.Now().Unix()
@@ -70,18 +70,18 @@ func OpenAuth() gin.HandlerFunc {
 			diff = -diff
 		}
 		if diff > 300 {
-			openApiAbort(c, "10009", "Timestamp expired")
+			openApiAbort(c, "10009", "签名错误、AppId 非法或时间戳过期")
 			return
 		}
 
 		storage, err := common.GetBodyStorage(c)
 		if err != nil {
-			openApiAbort(c, "10009", "Failed to read request body")
+			openApiAbort(c, "10009", "平台系统内部异常")
 			return
 		}
 		body, err := storage.Bytes()
 		if err != nil {
-			openApiAbort(c, "10009", "Failed to read request body")
+			openApiAbort(c, "10009", "平台系统内部异常")
 			return
 		}
 
@@ -89,12 +89,12 @@ func OpenAuth() gin.HandlerFunc {
 		hash := md5.Sum([]byte(signStr))
 		expectedSign := hex.EncodeToString(hash[:])
 		if expectedSign != sign {
-			openApiAbort(c, "10009", "Invalid signature")
+			openApiAbort(c, "10009", "签名错误、AppId 非法或时间戳过期")
 			return
 		}
 
 		if _, err := storage.Seek(0, 0); err != nil {
-			openApiAbort(c, "10009", "Failed to reset request body")
+			openApiAbort(c, "10009", "平台系统内部异常")
 			return
 		}
 
@@ -125,7 +125,7 @@ func CheckIccidRateLimit(c *gin.Context, iccid string) bool {
 	}
 
 	if count > 20 {
-		openApiAbort(c, "10008", "ICCID rate limit exceeded")
+		openApiAbort(c, "10008", "触发接口限流，请求频次超限")
 		return false
 	}
 
@@ -156,7 +156,7 @@ func CheckEmailRateLimit(c *gin.Context, email string, iccid string) bool {
 		}
 		if card > 5 {
 			common.RDB.SRem(ctx, key, iccid)
-			openApiAbort(c, "10008", "Email rate limit exceeded")
+			openApiAbort(c, "10008", "触发接口限流，请求频次超限")
 			return false
 		}
 	}
@@ -210,7 +210,7 @@ func CheckConsecutiveIccidRateLimit(c *gin.Context, appId string, iccid string) 
 				}
 			}
 			if consecutive {
-				openApiAbort(c, "10010", "Consecutive ICCID rate limit exceeded")
+				openApiAbort(c, "10010", "疑似爬虫批量遍历连续 ICCID，请求拦截")
 				return false
 			}
 		}
